@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armenian to Phonetic Converter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #armenianInput {
+            min-height: 120px;
+        }
+
+        #phoneticOutput {
+            min-height: 120px;
+            background: #f8f9fa;
+            cursor: default;
+        }
+
+        .output-section {
+            margin-top: 25px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #218838;
+        }
+
+        .info-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .char-table {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+
+        .char-item {
+            text-align: center;
+            padding: 8px 5px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .char-armenian {
+            font-size: 1.4rem;
+            color: #764ba2;
+        }
+
+        .char-phonetic {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .toggle-table {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            text-decoration: underline;
+            margin-top: 10px;
+        }
+
+        .toggle-table:hover {
+            color: #764ba2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-link a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Armenian to Phonetic Converter</h1>
+        <p class="subtitle">Convert Armenian script to pronounceable Latin text</p>
+        <p class="nav-link"><a href="line-by-line.html">Switch to Line-by-Line view</a></p>
+
+        <div class="card">
+            <div class="input-section">
+                <label for="armenianInput">Enter Armenian Text:</label>
+                <textarea id="armenianInput" placeholder="Type or paste Armenian text here..."></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="convertText()">Convert to Phonetic</button>
+                <button class="btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <div class="output-section">
+                <label for="phoneticOutput">Phonetic Pronunciation:</label>
+                <textarea id="phoneticOutput" readonly placeholder="Phonetic output will appear here..."></textarea>
+                <div class="btn-group">
+                    <button class="btn-copy" onclick="copyOutput()">Copy to Clipboard</button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>How to use</h3>
+                <p>
+                    Type or paste Armenian text in the input box above. The converter automatically
+                    transforms it into a Latin-alphabet pronunciation guide that can be read by
+                    non-Armenian speakers. Click "Show Character Map" to see all letter mappings.
+                </p>
+                <button class="toggle-table" onclick="toggleTable()">Show/Hide Character Map</button>
+                <div id="charTable" class="char-table hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete Armenian to Phonetic mapping using Unicode code points
+        const armenianMap = {
+            // Uppercase Armenian letters (U+0531 to U+0556)
+            '\u0531': 'A',       // Ա ayb
+            '\u0532': 'B',       // Բ ben
+            '\u0533': 'G',       // Գ gim
+            '\u0534': 'D',       // Դ da
+            '\u0535': '\x00E',   // Ե yech - marker for special handling (ye at word start, e elsewhere)
+            '\u0536': 'Z',       // Զ za
+            '\u0537': 'E',       // Է eh
+            '\u0538': 'Y',       // Ը et (schwa)
+            '\u0539': "T'",      // Թ to (aspirated)
+            '\u053A': 'Zh',      // Ժ zhe
+            '\u053B': 'I',       // Ի ini
+            '\u053C': 'L',       // Լ liwn
+            '\u053D': 'Kh',      // Խ xeh
+            '\u053E': 'Ts',      // Ծ ca
+            '\u053F': 'K',       // Կ ken
+            '\u0540': 'H',       // Հ ho
+            '\u0541': 'Dz',      // Ձ ja
+            '\u0542': 'Gh',      // Ղ ghad
+            '\u0543': 'Sh',      // Ճ cheh
+            '\u0544': 'M',       // Մ men
+            '\u0545': 'Y',       // Յ yi
+            '\u0546': 'N',       // Ն nu
+            '\u0547': 'Sh',      // Շ sha
+            '\u0548': 'Vo',      // Ո vo
+            '\u0549': "Ch'",     // Չ cha (aspirated)
+            '\u054A': 'P',       // Պ peh
+            '\u054B': 'J',       // Ջ jheh
+            '\u054C': 'Rr',      // Ռ ra (trilled)
+            '\u054D': 'S',       // Ս seh
+            '\u054E': 'V',       // Վ vev
+            '\u054F': 'T',       // Տ tiwn
+            '\u0550': 'R',       // Ր reh (flap)
+            '\u0551': "Ts'",     // Ց co (aspirated)
+            '\u0552': 'W',       // Ւ hiwn
+            '\u0553': "P'",      // Փ piwr (aspirated)
+            '\u0554': "K'",      // Ք keh (aspirated)
+            '\u0555': 'O',       // Օ oh
+            '\u0556': 'F',       // Ֆ feh
+
+            // Lowercase Armenian letters (U+0561 to U+0586)
+            '\u0561': 'a',       // ա
+            '\u0562': 'b',       // բ
+            '\u0563': 'g',       // գ
+            '\u0564': 'd',       // դ
+            '\u0565': '\x00e',   // delays - marker for special handling (ye at word start, e elsewhere)
+            '\u0566': 'z',       // զ
+            '\u0567': 'e',       // է
+            '\u0568': 'y',       // ը (schwa sound)
+            '\u0569': "t'",      // delays (aspirated t)
+            '\u056A': 'zh',      // ժ
+            '\u056B': 'i',       // delays
+            '\u056C': 'l',       // լ
+            '\u056D': 'kh',      // delays
+            '\u056E': 'ts',      // ծ
+            '\u056F': 'k',       // delays
+            '\u0570': 'h',       // հ
+            '\u0571': 'dz',      // ձ
+            '\u0572': 'gh',      // ղ
+            '\u0573': 'sh',      // ճ
+            '\u0574': 'm',       // մ
+            '\u0575': 'y',       // delays
+            '\u0576': 'n',       // delays
+            '\u0577': 'sh',      // delays
+            '\u0578': 'vo',      // ո
+            '\u0579': "ch'",     // delays (aspirated ch)
+            '\u057A': 'p',       // delays
+            '\u057B': 'j',       // ջ
+            '\u057C': 'rr',      // ռ (trilled r)
+            '\u057D': 's',       // ս
+            '\u057E': 'v',       // վ
+            '\u057F': 't',       // delays
+            '\u0580': 'r',       // delays (flap r)
+            '\u0581': "ts'",     // ց (aspirated ts)
+            '\u0582': 'u',       // ու
+            '\u0583': "p'",      // փ (aspirated p)
+            '\u0584': "k'",      // ք (aspirated k)
+            '\u0585': 'o',       // օ
+            '\u0586': 'f',       // ֆ
+
+            // Armenian ligature
+            '\u0587': 'ev',      // և
+
+            // Armenian punctuation
+            '\u0589': '.',       // ։ (full stop)
+            '\u055D': ',',       // ՝ (comma)
+            '\u055E': '?',       // ՞ (question mark)
+            '\u055C': '!',       // ՜ (exclamation)
+            '\u055B': "'",       // ՛ (emphasis mark)
+            '\u058A': '-',       // ֊ (hyphen)
+        };
+
+        // Character display data for the reference table
+        const charDisplayData = [
+            ['\u0531', 'A', 'ayb'],
+            ['\u0532', 'B', 'ben'],
+            ['\u0533', 'G', 'gim'],
+            ['\u0534', 'D', 'da'],
+            ['\u0535', 'Ye/e', 'yech'],
+            ['\u0536', 'Z', 'za'],
+            ['\u0537', 'E', 'eh'],
+            ['\u0538', 'Y', 'yt'],
+            ['\u0539', "T'", 'to'],
+            ['\u053A', 'Zh', 'zhe'],
+            ['\u053B', 'I', 'ini'],
+            ['\u053C', 'L', 'liwn'],
+            ['\u053D', 'Kh', 'xeh'],
+            ['\u053E', 'Ts', 'tsa'],
+            ['\u053F', 'K', 'ken'],
+            ['\u0540', 'H', 'ho'],
+            ['\u0541', 'Dz', 'dza'],
+            ['\u0542', 'Gh', 'ghad'],
+            ['\u0543', 'Sh', 'cheh'],
+            ['\u0544', 'M', 'men'],
+            ['\u0545', 'Y', 'yi'],
+            ['\u0546', 'N', 'nu'],
+            ['\u0547', 'Sh', 'sha'],
+            ['\u0548', 'Vo', 'vo'],
+            ['\u0549', "Ch'", 'cha'],
+            ['\u054A', 'P', 'peh'],
+            ['\u054B', 'J', 'jheh'],
+            ['\u054C', 'Rr', 'ra'],
+            ['\u054D', 'S', 'seh'],
+            ['\u054E', 'V', 'vev'],
+            ['\u054F', 'T', 'tiwn'],
+            ['\u0550', 'R', 'reh'],
+            ['\u0551', "Ts'", 'tso'],
+            ['\u0553', "P'", 'piwr'],
+            ['\u0554', "K'", 'keh'],
+            ['\u0555', 'O', 'oh'],
+            ['\u0556', 'F', 'feh'],
+            ['\u0587', 'ev', 'yev'],
+        ];
+
+        function convertText() {
+            const input = document.getElementById('armenianInput').value;
+            let output = '';
+
+            // Handle the digraph delays + delays = "u" sound (replace before character-by-character)
+            let processedInput = input
+                .replace(/\u0548\u0582/g, 'U')   // Ո + delays = U
+                .replace(/\u0578\u0582/g, 'u'); // delays + delays = u
+
+            for (let i = 0; i < processedInput.length; i++) {
+                const char = processedInput[i];
+                if (armenianMap[char]) {
+                    output += armenianMap[char];
+                } else {
+                    output += char;
+                }
+            }
+
+            // Handle word-initial delays (should be 'vo') vs mid-word (should be 'o')
+            // Word-initial vo stays as 'vo', mid-word changes to just 'o'
+            output = output.replace(/([a-zA-Z])vo/g, '$1o');
+
+            // Handle word-initial ե/ Delays (should be 'ye'/'Ye') vs mid-word (should be 'e')
+            // The marker \x00 identifies letters from delays
+            // At word start: \x00E -> Ye, \x00e -> ye
+            // Mid-word: \x00E -> E, \x00e -> e (then lowercase context handles it)
+            output = output
+                .replace(/(^|[^a-zA-Z])\x00E/g, '$1Ye')  // Word-initial uppercase
+                .replace(/(^|[^a-zA-Z])\x00e/g, '$1ye')  // Word-initial lowercase
+                .replace(/\x00E/g, 'e')                   // Mid-word uppercase -> e
+                .replace(/\x00e/g, 'e');                  // Mid-word lowercase -> e
+
+            document.getElementById('phoneticOutput').value = output;
+        }
+
+        function clearAll() {
+            document.getElementById('armenianInput').value = '';
+            document.getElementById('phoneticOutput').value = '';
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('phoneticOutput');
+            output.select();
+            output.setSelectionRange(0, 99999); // For mobile
+
+            navigator.clipboard.writeText(output.value).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#1e7e34';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 1500);
+            });
+        }
+
+        function toggleTable() {
+            const table = document.getElementById('charTable');
+            table.classList.toggle('hidden');
+        }
+
+        // Build character reference table
+        function buildCharTable() {
+            const table = document.getElementById('charTable');
+            let html = '';
+
+            charDisplayData.forEach(([arm, phon, name]) => {
+                html += `<div class="char-item" title="${name}">
+                    <div class="char-armenian">${arm}</div>
+                    <div class="char-phonetic">${phon}</div>
+                </div>`;
+            });
+
+            table.innerHTML = html;
+        }
+
+        // Auto-convert as user types
+        document.getElementById('armenianInput').addEventListener('input', convertText);
+
+        // Initialize the character table
+        buildCharTable();
+    </script>
+</body>
+</html>

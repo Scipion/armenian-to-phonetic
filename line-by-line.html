@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armenian to Phonetic - Line by Line</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            min-height: 150px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #218838;
+        }
+
+        .output-section {
+            margin-top: 25px;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .output-header h2 {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .line-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .line-pair {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .line-pair:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .armenian-line {
+            font-size: 1.3rem;
+            color: #764ba2;
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+
+        .phonetic-line {
+            font-size: 1.1rem;
+            color: #333;
+            font-style: italic;
+            line-height: 1.5;
+            padding-left: 10px;
+            border-left: 3px solid #667eea;
+        }
+
+        .line-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 5px;
+            background: #e0e0e0;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .view-toggle button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .view-toggle button.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .word-by-word .line-pair {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .word-pair {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .word-armenian {
+            font-size: 1.2rem;
+            color: #764ba2;
+            margin-bottom: 4px;
+        }
+
+        .word-phonetic {
+            font-size: 0.95rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .nav-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-link a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .output-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Armenian to Phonetic</h1>
+        <p class="subtitle">Line-by-line pronunciation guide</p>
+        <p class="nav-link"><a href="index.html">Switch to Simple view</a></p>
+
+        <div class="card">
+            <label for="armenianInput">Enter Armenian Text:</label>
+            <textarea id="armenianInput" placeholder="Type or paste Armenian text here...
+Each line will be shown with its pronunciation below."></textarea>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="convertText()">Convert</button>
+                <button class="btn-secondary" onclick="clearAll()">Clear</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="output-header">
+                <h2>Pronunciation Guide</h2>
+                <div class="view-toggle">
+                    <button id="lineViewBtn" class="active" onclick="setView('line')">Line View</button>
+                    <button id="wordViewBtn" onclick="setView('word')">Word View</button>
+                </div>
+            </div>
+            <div id="outputContainer" class="line-container">
+                <div class="empty-state">Enter Armenian text above to see the pronunciation guide</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn-copy" onclick="copyAll()">Copy All</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'line';
+
+        // Armenian to Phonetic mapping
+        const armenianMap = {
+            // Uppercase Armenian letters
+            '\u0531': 'A',
+            '\u0532': 'B',
+            '\u0533': 'G',
+            '\u0534': 'D',
+            '\u0535': '\x00E',   // Ե - marker for ye/e
+            '\u0536': 'Z',
+            '\u0537': 'E',
+            '\u0538': 'Y',
+            '\u0539': "T'",
+            '\u053A': 'Zh',
+            '\u053B': 'I',
+            '\u053C': 'L',
+            '\u053D': 'Kh',
+            '\u053E': 'Ts',
+            '\u053F': 'K',
+            '\u0540': 'H',
+            '\u0541': 'Dz',
+            '\u0542': 'Gh',
+            '\u0543': 'Sh',
+            '\u0544': 'M',
+            '\u0545': 'Y',
+            '\u0546': 'N',
+            '\u0547': 'Sh',
+            '\u0548': 'Vo',
+            '\u0549': "Ch'",
+            '\u054A': 'P',
+            '\u054B': 'J',
+            '\u054C': 'Rr',
+            '\u054D': 'S',
+            '\u054E': 'V',
+            '\u054F': 'T',
+            '\u0550': 'R',
+            '\u0551': "Ts'",
+            '\u0552': 'W',
+            '\u0553': "P'",
+            '\u0554': "K'",
+            '\u0555': 'O',
+            '\u0556': 'F',
+
+            // Lowercase Armenian letters
+            '\u0561': 'a',
+            '\u0562': 'b',
+            '\u0563': 'g',
+            '\u0564': 'd',
+            '\u0565': '\x00e',   // delays - marker for ye/e
+            '\u0566': 'z',
+            '\u0567': 'e',
+            '\u0568': 'y',
+            '\u0569': "t'",
+            '\u056A': 'zh',
+            '\u056B': 'i',
+            '\u056C': 'l',
+            '\u056D': 'kh',
+            '\u056E': 'ts',
+            '\u056F': 'k',
+            '\u0570': 'h',
+            '\u0571': 'dz',
+            '\u0572': 'gh',
+            '\u0573': 'sh',
+            '\u0574': 'm',
+            '\u0575': 'y',
+            '\u0576': 'n',
+            '\u0577': 'sh',
+            '\u0578': 'vo',
+            '\u0579': "ch'",
+            '\u057A': 'p',
+            '\u057B': 'j',
+            '\u057C': 'rr',
+            '\u057D': 's',
+            '\u057E': 'v',
+            '\u057F': 't',
+            '\u0580': 'r',
+            '\u0581': "ts'",
+            '\u0582': 'u',
+            '\u0583': "p'",
+            '\u0584': "k'",
+            '\u0585': 'o',
+            '\u0586': 'f',
+
+            // Ligature
+            '\u0587': 'ev',
+
+            // Punctuation
+            '\u0589': '.',
+            '\u055D': ',',
+            '\u055E': '?',
+            '\u055C': '!',
+            '\u055B': "'",
+            '\u058A': '-',
+        };
+
+        function convertToPhonetic(text) {
+            // Handle digraph delays + delays = "u"
+            let processed = text
+                .replace(/\u0548\u0582/g, 'U')
+                .replace(/\u0578\u0582/g, 'u');
+
+            let output = '';
+            for (let i = 0; i < processed.length; i++) {
+                const char = processed[i];
+                if (armenianMap[char]) {
+                    output += armenianMap[char];
+                } else {
+                    output += char;
+                }
+            }
+
+            // Handle word-initial delays (vo) vs mid-word (o)
+            output = output.replace(/([a-zA-Z])vo/g, '$1o');
+
+            // Handle word-initial delays (ye) vs mid-word (e)
+            output = output
+                .replace(/(^|[^a-zA-Z])\x00E/g, '$1Ye')
+                .replace(/(^|[^a-zA-Z])\x00e/g, '$1ye')
+                .replace(/\x00E/g, 'e')
+                .replace(/\x00e/g, 'e');
+
+            return output;
+        }
+
+        function convertText() {
+            const input = document.getElementById('armenianInput').value;
+            const container = document.getElementById('outputContainer');
+
+            if (!input.trim()) {
+                container.innerHTML = '<div class="empty-state">Enter Armenian text above to see the pronunciation guide</div>';
+                return;
+            }
+
+            const lines = input.split('\n');
+            let html = '';
+
+            if (currentView === 'line') {
+                lines.forEach((line, index) => {
+                    if (line.trim()) {
+                        const phonetic = convertToPhonetic(line);
+                        html += `<div class="line-pair">
+                            <div class="armenian-line"><span class="line-number">${index + 1}</span>${escapeHtml(line)}</div>
+                            <div class="phonetic-line">${escapeHtml(phonetic)}</div>
+                        </div>`;
+                    }
+                });
+            } else {
+                // Word by word view
+                lines.forEach((line, index) => {
+                    if (line.trim()) {
+                        const words = line.split(/\s+/);
+                        html += `<div class="line-pair word-by-word">`;
+                        words.forEach(word => {
+                            if (word.trim()) {
+                                const phonetic = convertToPhonetic(word);
+                                html += `<div class="word-pair">
+                                    <span class="word-armenian">${escapeHtml(word)}</span>
+                                    <span class="word-phonetic">${escapeHtml(phonetic)}</span>
+                                </div>`;
+                            }
+                        });
+                        html += `</div>`;
+                    }
+                });
+            }
+
+            container.innerHTML = html || '<div class="empty-state">No content to display</div>';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function clearAll() {
+            document.getElementById('armenianInput').value = '';
+            document.getElementById('outputContainer').innerHTML =
+                '<div class="empty-state">Enter Armenian text above to see the pronunciation guide</div>';
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('lineViewBtn').classList.toggle('active', view === 'line');
+            document.getElementById('wordViewBtn').classList.toggle('active', view === 'word');
+            convertText();
+        }
+
+        function copyAll() {
+            const input = document.getElementById('armenianInput').value;
+            if (!input.trim()) return;
+
+            const lines = input.split('\n');
+            let text = '';
+
+            lines.forEach((line, index) => {
+                if (line.trim()) {
+                    const phonetic = convertToPhonetic(line);
+                    text += `${line}\n${phonetic}\n\n`;
+                }
+            });
+
+            navigator.clipboard.writeText(text.trim()).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#1e7e34';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 1500);
+            });
+        }
+
+        // Auto-convert as user types
+        document.getElementById('armenianInput').addEventListener('input', convertText);
+    </script>
+</body>
+</html>
