@@ -1,8 +1,8 @@
 # Armenian to Phonetic Converter
 
-[https://scipion.github.io/armenian-to-phonetic/]()
+[https://scipion.github.io/armenian-to-phonetic/](https://scipion.github.io/armenian-to-phonetic/)
 
-[https://scipion.github.io/armenian-to-phonetic/line-by-line.html]()
+[https://scipion.github.io/armenian-to-phonetic/line-by-line.html](https://scipion.github.io/armenian-to-phonetic/line-by-line.html)
 
 A web tool that converts Armenian script into pronounceable Latin text.
 
